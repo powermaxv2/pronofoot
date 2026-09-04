@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PronoFoot - Pronostics Football</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>⚽ PronoFoot</h1>
+            <p>Pronostics de football en temps réel</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="filters">
+            <label>Ligue :</label>
+            <select id="leagueSelect">
+                <option value="39">Premier League</option>
+                <option value="61">Ligue 1</option>
+                <option value="140">La Liga</option>
+                <option value="135">Serie A</option>
+                <option value="78">Bundesliga</option>
+            </select>
+            <button onclick="loadMatches()">Charger les matchs</button>
+        </div>
+
+        <div id="loading" class="loading">Chargement des données...</div>
+        <div id="matches" class="matches-grid"></div>
+        <div id="error" class="error"></div>
+    </main>
+
+    <footer>
+        <p>PronoFoot © 2026 | API Football Data</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
