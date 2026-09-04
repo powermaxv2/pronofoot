@@ -1,81 +1,63 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PronoFoot - Pronostics de Football</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PronoFoot - Pronostics de Football en Temps Réel</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-futbol"></i>
-                    <h1>PronoFoot</h1>
-                </div>
-                <div class="header-info">
-                    <span class="live-indicator"><span class="pulse"></span> EN DIRECT</span>
-                    <span class="update-time" id="updateTime">Mise à jour: --:--</span>
-                </div>
-            </div>
-        </header>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <h1 class="logo">⚽ PronoFoot</h1>
+        <p class="tagline">Pronostics Football en Temps Réel</p>
+      </div>
+      <div class="api-status">
+        <span class="status-dot"></span>
+        <span>API Active</span>
+      </div>
+    </header>
 
-        <!-- Filters -->
-        <div class="filters">
-            <div class="filter-group">
-                <label for="leagueFilter">Sélectionner une ligue</label>
-                <select id="leagueFilter">
-                    <option value="">Tous les matchs</option>
-                    <option value="PL">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</option>
-                    <option value="PD">🇪🇸 La Liga</option>
-                    <option value="SA">🇮🇹 Serie A</option>
-                    <option value="BL1">🇩🇪 Bundesliga</option>
-                    <option value="FL1">🇫🇷 Ligue 1</option>
-                    <option value="CL">🏆 Ligue des Champions</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="statusFilter">Statut des matchs</label>
-                <select id="statusFilter">
-                    <option value="">Tous</option>
-                    <option value="LIVE">🔴 EN DIRECT</option>
-                    <option value="SCHEDULED">⏰ À VENIR</option>
-                    <option value="FINISHED">✅ TERMINÉ</option>
-                </select>
-            </div>
-            <button class="btn-refresh" id="refreshBtn">
-                <i class="fas fa-sync-alt"></i> Actualiser
-            </button>
+    <!-- Filtres -->
+    <div class="filters-section">
+      <div class="filters">
+        <div class="filter-group">
+          <label for="league-filter">🏆 Ligue:</label>
+          <select id="league-filter">
+            <option value="ALL">Toutes les ligues</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="status-filter">📊 Statut:</label>
+          <select id="status-filter">
+            <option value="ALL">Tous les matchs</option>
+            <option value="SCHEDULED">⏰ À venir</option>
+            <option value="LIVE">🔴 En direct</option>
+            <option value="FINISHED">✅ Terminés</option>
+          </select>
         </div>
 
-        <!-- Loading -->
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Chargement des matchs...</p>
-        </div>
-
-        <!-- Matches Container -->
-        <main class="matches-container" id="matchesContainer">
-            <!-- Les matchs seront insérés ici -->
-        </main>
-
-        <!-- Empty State -->
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <i class="fas fa-search"></i>
-            <h2>Aucun match trouvé</h2>
-            <p>Ajuste tes filtres pour voir les matchs disponibles</p>
-        </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>© 2026 PronoFoot - Pronostics de football en temps réel</p>
-            <p><small>Données en direct - Mise à jour automatique toutes les 60 secondes</small></p>
-        </footer>
+        <button id="refresh-btn" class="refresh-btn">🔄 Actualiser</button>
+      </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Conteneur des matchs -->
+    <main class="main-content">
+      <div id="matches-container" class="matches-container">
+        <p class="loading">⏳ Chargement des matchs...</p>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>📊 Données en temps réel via Football-Data.org | Actualisation auto toutes les 60 secondes</p>
+      <p>⚠️ PronoFoot est à titre informatif. Pas de responsabilité sur les paris.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
