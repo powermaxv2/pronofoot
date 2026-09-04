@@ -3,38 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PronoFoot - Pronostics Football</title>
+    <title>PronoFoot - Pronostics de Football</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>⚽ PronoFoot</h1>
-            <p>Pronostics de football en temps réel</p>
-        </div>
-    </header>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-futbol"></i>
+                    <h1>PronoFoot</h1>
+                </div>
+                <div class="header-info">
+                    <span class="live-indicator"><span class="pulse"></span> EN DIRECT</span>
+                    <span class="update-time" id="updateTime">Mise à jour: --:--</span>
+                </div>
+            </div>
+        </header>
 
-    <main class="container">
+        <!-- Filters -->
         <div class="filters">
-            <label>Ligue :</label>
-            <select id="leagueSelect">
-                <option value="39">Premier League</option>
-                <option value="61">Ligue 1</option>
-                <option value="140">La Liga</option>
-                <option value="135">Serie A</option>
-                <option value="78">Bundesliga</option>
-            </select>
-            <button onclick="loadMatches()">Charger les matchs</button>
+            <div class="filter-group">
+                <label for="leagueFilter">Sélectionner une ligue</label>
+                <select id="leagueFilter">
+                    <option value="">Tous les matchs</option>
+                    <option value="PL">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</option>
+                    <option value="PD">🇪🇸 La Liga</option>
+                    <option value="SA">🇮🇹 Serie A</option>
+                    <option value="BL1">🇩🇪 Bundesliga</option>
+                    <option value="FL1">🇫🇷 Ligue 1</option>
+                    <option value="CL">🏆 Ligue des Champions</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="statusFilter">Statut des matchs</label>
+                <select id="statusFilter">
+                    <option value="">Tous</option>
+                    <option value="LIVE">🔴 EN DIRECT</option>
+                    <option value="SCHEDULED">⏰ À VENIR</option>
+                    <option value="FINISHED">✅ TERMINÉ</option>
+                </select>
+            </div>
+            <button class="btn-refresh" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Actualiser
+            </button>
         </div>
 
-        <div id="loading" class="loading">Chargement des données...</div>
-        <div id="matches" class="matches-grid"></div>
-        <div id="error" class="error"></div>
-    </main>
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Chargement des matchs...</p>
+        </div>
 
-    <footer>
-        <p>PronoFoot © 2026 | API Football Data</p>
-    </footer>
+        <!-- Matches Container -->
+        <main class="matches-container" id="matchesContainer">
+            <!-- Les matchs seront insérés ici -->
+        </main>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h2>Aucun match trouvé</h2>
+            <p>Ajuste tes filtres pour voir les matchs disponibles</p>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2026 PronoFoot - Pronostics de football en temps réel</p>
+            <p><small>Données en direct - Mise à jour automatique toutes les 60 secondes</small></p>
+        </footer>
+    </div>
 
     <script src="script.js"></script>
 </body>
