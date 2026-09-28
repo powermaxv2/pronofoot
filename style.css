@@ -17,14 +17,51 @@
     --danger: #ef4444;
     --bg-card: #1e293b;
     --border: #334155;
+
+    --bg-body-start: var(--darker);
+    --bg-body-end: #1a1f35;
+    --bg-navbar: rgba(15, 23, 42, 0.95);
+    --bg-card-start: rgba(30, 41, 59, 0.8);
+    --bg-card-end: rgba(30, 41, 59, 0.4);
+    --bg-footer: rgba(15, 23, 42, 0.8);
+    --bg-filters: rgba(15, 23, 42, 0.5);
+    --bg-select: rgba(30, 41, 59, 0.8);
+
+    --text-heading: #ffffff;
+    --text-primary: #e2e8f0;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-faint: #64748b;
+}
+
+:root[data-theme="light"] {
+    --dark: #f8fafc;
+    --darker: #eef2f9;
+    --border: #dbe2ea;
+
+    --bg-body-start: #eef2f9;
+    --bg-body-end: #e2e8f0;
+    --bg-navbar: rgba(255, 255, 255, 0.9);
+    --bg-card-start: rgba(255, 255, 255, 0.9);
+    --bg-card-end: rgba(255, 255, 255, 0.6);
+    --bg-footer: rgba(255, 255, 255, 0.85);
+    --bg-filters: rgba(255, 255, 255, 0.6);
+    --bg-select: rgba(255, 255, 255, 0.9);
+
+    --text-heading: #0f172a;
+    --text-primary: #1e293b;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --text-faint: #94a3b8;
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, var(--darker) 0%, #1a1f35 100%);
-    color: #e2e8f0;
+    background: linear-gradient(135deg, var(--bg-body-start) 0%, var(--bg-body-end) 100%);
+    color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 html {
@@ -36,7 +73,7 @@ html {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(15, 23, 42, 0.95);
+    background: var(--bg-navbar);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(148, 163, 184, 0.1);
     z-index: 1000;
@@ -69,7 +106,7 @@ html {
 }
 
 .nav-link {
-    color: #cbd5e1;
+    color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s ease;
@@ -129,7 +166,7 @@ html {
 .hero-content h1 {
     font-size: 3.5rem;
     margin-bottom: 1rem;
-    background: linear-gradient(135deg, #ffffff, var(--primary));
+    background: linear-gradient(135deg, var(--text-heading), var(--primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 800;
@@ -137,7 +174,7 @@ html {
 
 .hero-content p {
     font-size: 1.3rem;
-    color: #cbd5e1;
+    color: var(--text-secondary);
     margin-bottom: 2rem;
 }
 
@@ -163,7 +200,7 @@ html {
 }
 
 .stat-label {
-    color: #94a3b8;
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin-top: 0.5rem;
 }
@@ -171,14 +208,14 @@ html {
 /* ============ FILTERS ============ */
 .filters-section {
     padding: 2rem;
-    background: rgba(15, 23, 42, 0.5);
+    background: var(--bg-filters);
     border-bottom: 1px solid var(--border);
 }
 
 .filters-section h2 {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
-    color: #ffffff;
+    color: var(--text-heading);
 }
 
 .filters {
@@ -195,15 +232,15 @@ html {
 
 .filter-group label {
     font-size: 0.9rem;
-    color: #94a3b8;
+    color: var(--text-muted);
     font-weight: 500;
 }
 
 .filter-select {
     padding: 0.75rem 1rem;
-    background: rgba(30, 41, 59, 0.8);
+    background: var(--bg-select);
     border: 1px solid var(--border);
-    color: #e2e8f0;
+    color: var(--text-primary);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -264,7 +301,7 @@ html {
 }
 
 .match-card {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.4));
+    background: linear-gradient(135deg, var(--bg-card-start), var(--bg-card-end));
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 1.5rem;
@@ -304,7 +341,7 @@ html {
 
 .match-date {
     font-size: 0.85rem;
-    color: #94a3b8;
+    color: var(--text-muted);
 }
 
 .match-status {
@@ -376,11 +413,11 @@ html {
     font-size: 0.95rem;
     font-weight: 600;
     text-align: center;
-    color: #e2e8f0;
+    color: var(--text-primary);
 }
 
 .vs {
-    color: #64748b;
+    color: var(--text-faint);
     font-weight: 300;
     flex: 0.2;
 }
@@ -416,7 +453,7 @@ html {
 
 .prediction-label {
     font-size: 0.85rem;
-    color: #94a3b8;
+    color: var(--text-muted);
     margin-bottom: 0.3rem;
 }
 
@@ -457,7 +494,7 @@ html {
 }
 
 .sidebar-card {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.4));
+    background: linear-gradient(135deg, var(--bg-card-start), var(--bg-card-end));
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 1.5rem;
@@ -494,13 +531,13 @@ html {
 .upcoming-teams {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #e2e8f0;
+    color: var(--text-primary);
     margin-bottom: 0.3rem;
 }
 
 .upcoming-time {
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: var(--text-muted);
 }
 
 .stats-box {
@@ -529,23 +566,23 @@ html {
 }
 
 .tip-card p {
-    color: #cbd5e1;
+    color: var(--text-secondary);
     font-style: italic;
 }
 
 .empty {
-    color: #64748b;
+    color: var(--text-faint);
     text-align: center;
     padding: 1rem;
 }
 
 /* ============ FOOTER ============ */
 .footer {
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--bg-footer);
     border-top: 1px solid var(--border);
     padding: 2rem;
     text-align: center;
-    color: #64748b;
+    color: var(--text-faint);
 }
 
 /* ============ RESPONSIVE ============ */
