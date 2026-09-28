@@ -25,26 +25,68 @@ let allMatches = [];
 let filteredMatches = [];
 let standingsByLeague = {}; // clé LEAGUES -> table de classement
 let standingsLoadedAt = 0;
+let selectedLeague = '';
+let selectedStatus = '';
 
-// Team emojis pour les logos
-const TEAM_EMOJIS = {
-    'Manchester United': '🔴', 'Liverpool': '❤️', 'Manchester City': '🩵', 'Arsenal': '❤️',
-    'Tottenham': '⚪', 'Chelsea': '🔵', 'Real Madrid': '⚪', 'Barcelona': '🔵',
-    'Atlético Madrid': '🔴', 'Sevilla': '❤️', 'Bayern Munich': '⚪', 'Borussia Dortmund': '🟡',
-    'Juventus': '⚪', 'Inter': '🔵', 'AC Milan': '❤️', 'PSG': '🔴', 'Marseille': '⚪'
-};
+const STATUS_OPTIONS = [
+    { key: 'SCHEDULED', label: 'À venir' },
+    { key: 'LIVE', label: 'En direct' },
+    { key: 'FINISHED', label: 'Terminé' }
+];
+
+const ICON_MOON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 14.4A8.5 8.5 0 1 1 9.6 4a7 7 0 0 0 10.4 10.4Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+const ICON_SUN = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1M18.4 18.4l-2.1-2.1M7.7 7.7 5.6 5.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>';
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    renderFilterChips();
     loadMatches();
     setInterval(loadMatches, MATCH_STATUS_TTL);
 
-    document.getElementById('leagueFilter').addEventListener('change', filterMatches);
-    document.getElementById('statusFilter').addEventListener('change', filterMatches);
+    document.getElementById('leagueChips').addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        selectedLeague = chip.dataset.value;
+        renderFilterChips();
+        filterMatches();
+    });
+    document.getElementById('statusChips').addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        selectedStatus = chip.dataset.value;
+        renderFilterChips();
+        filterMatches();
+    });
     document.getElementById('refreshBtn').addEventListener('click', loadMatches);
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 });
+
+// Construit les chips de filtre à partir de LEAGUES (source unique de vérité)
+function renderFilterChips() {
+    const chipHTML = (value, label, active) =>
+        `<button type="button" class="chip${active ? ' active' : ''}" data-value="${value}">${label}</button>`;
+
+    const leagueOptions = [{ key: '', label: 'Toutes les ligues' },
+        ...Object.entries(LEAGUES).map(([key, l]) => ({ key, label: l.name }))];
+    document.getElementById('leagueChips').innerHTML = leagueOptions
+        .map(opt => chipHTML(opt.key, opt.label, opt.key === selectedLeague))
+        .join('');
+
+    const statusOptions = [{ key: '', label: 'Tous les statuts' }, ...STATUS_OPTIONS];
+    document.getElementById('statusChips').innerHTML = statusOptions
+        .map(opt => chipHTML(opt.key, opt.label, opt.key === selectedStatus))
+        .join('');
+}
+
+// Initiales d'équipe pour le badge (code officiel si fourni par l'API, sinon dérivé du nom)
+function getInitials(team) {
+    if (team.tla) return team.tla;
+    const words = team.name.replace(/\b(FC|CF|AFC|SC|AC|CD|RC)\b/gi, '').trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return '?';
+    if (words.length === 1) return words[0].slice(0, 3).toUpperCase();
+    return words.slice(0, 3).map(w => w[0]).join('').toUpperCase();
+}
 
 // football-data.org v4 n'a pas de statut "LIVE" : ce sont IN_PLAY / PAUSED.
 // On regroupe tout dans les 3 catégories utilisées par l'UI et on ignore les
@@ -113,7 +155,10 @@ async function loadMatches() {
         updateStats();
         updateUpcoming();
 
-        if (!anySuccess) {
+        // On n'affiche l'erreur en grand que si on n'a jamais rien pu charger :
+        // un rafraîchissement automatique qui échoue transitoirement ne doit
+        // pas effacer les matchs déjà affichés avec succès juste avant.
+        if (!anySuccess && allMatches.length === 0) {
             showError(rateLimited
                 ? 'Limite de requêtes API atteinte, réessayez dans une minute.'
                 : 'Erreur de chargement. Veuillez actualiser.');
@@ -153,12 +198,9 @@ async function ensureStandingsLoaded() {
 
 // Filtrer les matchs
 function filterMatches() {
-    const leagueFilter = document.getElementById('leagueFilter').value;
-    const statusFilter = document.getElementById('statusFilter').value;
-
     filteredMatches = allMatches.filter(match => {
-        const leagueMatch = !leagueFilter || match.competitionKey === leagueFilter;
-        const statusMatch = !statusFilter || match.normalizedStatus === statusFilter;
+        const leagueMatch = !selectedLeague || match.competitionKey === selectedLeague;
+        const statusMatch = !selectedStatus || match.normalizedStatus === selectedStatus;
         return leagueMatch && statusMatch;
     });
 
@@ -191,53 +233,47 @@ function createMatchCard(match) {
     const homeTeam = match.homeTeam;
     const awayTeam = match.awayTeam;
 
-    const homeScore = match.score.fullTime.home ?? '-';
-    const awayScore = match.score.fullTime.away ?? '-';
+    const scoreText = match.normalizedStatus === 'SCHEDULED'
+        ? date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+        : `${match.score.fullTime.home ?? '-'} – ${match.score.fullTime.away ?? '-'}`;
 
     const predictions = calculatePredictions(match);
 
-    const emoji1 = TEAM_EMOJIS[homeTeam.name] || '⚽';
-    const emoji2 = TEAM_EMOJIS[awayTeam.name] || '⚽';
-
     return `
-        <div class="match-card">
+        <article class="match-card">
             <div class="match-header">
                 <span class="match-date">${dateStr}</span>
                 <span class="match-status status-${match.normalizedStatus.toLowerCase()}">
-                    ${status.emoji} ${status.text}
+                    <span class="status-dot"></span>${status.text}
                 </span>
             </div>
             <div class="match-league">${match.competitionName}</div>
 
             <div class="teams">
                 <div class="team">
-                    <div class="team-logo">${emoji1}</div>
+                    <div class="team-badge">${getInitials(homeTeam)}</div>
                     <div class="team-name">${homeTeam.name}</div>
                 </div>
-                <div class="vs">
-                    <div class="score">${homeScore} - ${awayScore}</div>
-                </div>
+                <div class="score-tile">${scoreText}</div>
                 <div class="team">
-                    <div class="team-logo">${emoji2}</div>
+                    <div class="team-badge">${getInitials(awayTeam)}</div>
                     <div class="team-name">${awayTeam.name}</div>
                 </div>
             </div>
 
-            <div class="predictions">
-                <div class="prediction">
-                    <div class="prediction-label">Victoire</div>
-                    <div class="prediction-value">${predictions.win.toFixed(1)}%</div>
+            <div>
+                <div class="prediction-labels">
+                    <span>Victoire ${predictions.win.toFixed(0)}%</span>
+                    <span>Nul ${predictions.draw.toFixed(0)}%</span>
+                    <span>Défaite ${predictions.loss.toFixed(0)}%</span>
                 </div>
-                <div class="prediction">
-                    <div class="prediction-label">Nul</div>
-                    <div class="prediction-value">${predictions.draw.toFixed(1)}%</div>
-                </div>
-                <div class="prediction">
-                    <div class="prediction-label">Défaite</div>
-                    <div class="prediction-value">${predictions.loss.toFixed(1)}%</div>
+                <div class="prediction-bar">
+                    <div class="seg-win" style="width: ${predictions.win}%"></div>
+                    <div class="seg-draw" style="width: ${predictions.draw}%"></div>
+                    <div class="seg-loss" style="width: ${predictions.loss}%"></div>
                 </div>
             </div>
-        </div>
+        </article>
     `;
 }
 
@@ -276,12 +312,8 @@ function calculatePredictions(match) {
 
 // Obtenir le statut du match
 function getStatusDisplay(status) {
-    const statuses = {
-        'SCHEDULED': { emoji: '⏰', text: 'À venir' },
-        'LIVE': { emoji: '🔴', text: 'En direct' },
-        'FINISHED': { emoji: '✅', text: 'Terminé' }
-    };
-    return statuses[status] || { emoji: '❓', text: status };
+    const statuses = { SCHEDULED: 'À venir', LIVE: 'En direct', FINISHED: 'Terminé' };
+    return { text: statuses[status] || status };
 }
 
 // Afficher le chargement
@@ -354,8 +386,8 @@ function toggleTheme() {
 
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
-    const icon = document.querySelector('#themeToggle i');
-    if (icon) {
-        icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    const btn = document.getElementById('themeToggle');
+    if (btn) {
+        btn.innerHTML = theme === 'dark' ? ICON_MOON : ICON_SUN;
     }
 }
