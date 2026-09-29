@@ -4,6 +4,7 @@ import { currentSeasonYear, formatMonth, formatTime, parisMonthRange } from "@/l
 import { prisma } from "@/server/db";
 import { COMPETITION_CODES, isCompetitionCode, type CompetitionCode } from "@/server/football/competitions";
 import { upsertFixture, upsertStandings } from "@/server/football/importer";
+import { LIVE_WINDOW } from "@/server/football/live";
 import { anyProviderConfigured, PROVIDERS, withFallback } from "@/server/football/providers";
 import { headToHeadSchema, lineupsSchema } from "@/server/football/types";
 import { notify } from "@/server/notifications";
@@ -17,8 +18,7 @@ const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-/** Fenêtre « live » d'un match : de H-5 min à H+150 min. */
-export const LIVE_WINDOW = { before: 5 * MINUTE, after: 150 * MINUTE } as const;
+export { LIVE_WINDOW };
 
 const seasonYear = () => env().FOOTBALL_SEASON ?? currentSeasonYear();
 const noProvider: JobResult = {
