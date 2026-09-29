@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { MatchDetailView } from "@/components/features/match/match-detail";
+import { MatchView } from "@/components/features/match/match-view";
 import { MatchModal } from "@/components/features/match/match-modal";
 import { getMatchDetail } from "@/server/queries/matches";
 import { requireUser } from "@/server/session";
@@ -12,7 +12,7 @@ export default async function MatchModalPage({ params }: { params: Promise<{ id:
   if (!detail) notFound();
   return (
     <MatchModal matchId={detail.id} title={`${detail.homeTeam.name} – ${detail.awayTeam.name}`}>
-      <MatchDetailView detail={detail} />
+      <MatchView detail={detail} />
     </MatchModal>
   );
 }

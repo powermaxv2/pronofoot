@@ -19,7 +19,7 @@ const teamSelect = {
   secondaryColor: true,
 } satisfies Prisma.TeamSelect;
 
-const cardSelect = (userId: string) =>
+export const cardSelect = (userId: string) =>
   ({
     id: true,
     kickoffAt: true,
@@ -34,7 +34,15 @@ const cardSelect = (userId: string) =>
     awayTeam: { select: teamSelect },
     predictions: {
       where: { userId },
-      select: { outcome: true, homeScore: true, awayScore: true, isJoker: true, state: true, points: true },
+      select: {
+        outcome: true,
+        homeScore: true,
+        awayScore: true,
+        isJoker: true,
+        state: true,
+        points: true,
+        seenAt: true,
+      },
       take: 1,
     },
   }) satisfies Prisma.MatchSelect;
@@ -49,10 +57,11 @@ export type MatchCardData = Omit<RawCard, "predictions"> & {
     isJoker: boolean;
     state: PredictionState;
     points: number;
+    seenAt: Date | null;
   } | null;
 };
 
-const toCard = ({ predictions, ...rest }: RawCard): MatchCardData => ({
+export const toCard = ({ predictions, ...rest }: RawCard): MatchCardData => ({
   ...rest,
   prediction: predictions[0] ?? null,
 });

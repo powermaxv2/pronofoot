@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { MatchDetailView } from "@/components/features/match/match-detail";
+import { MatchView } from "@/components/features/match/match-view";
 import { prisma } from "@/server/db";
 import { getMatchDetail } from "@/server/queries/matches";
 import { requireUser } from "@/server/session";
@@ -21,7 +21,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
   if (!detail) notFound();
   return (
     <div className="glass mx-auto mt-4 max-w-3xl rounded-3xl p-5 sm:p-8">
-      <MatchDetailView detail={detail} />
+      <MatchView detail={detail} />
     </div>
   );
 }

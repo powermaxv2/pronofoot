@@ -37,7 +37,7 @@ export function ProgressBar({ label, value, highlight, delay = 0, className }: P
         <m.div
           className={cn("h-full origin-left rounded-full", highlight ? "bg-volt" : "bg-primary")}
           initial={{ scaleX: reduced ? value : 0, opacity: reduced ? 0 : 1 }}
-          animate={inView ? { scaleX: value, opacity: 1 } : undefined}
+          animate={{ scaleX: inView || reduced ? value : 0, opacity: inView || !reduced ? 1 : 0 }}
           transition={reduced ? fade : { ...spring.counter, delay }}
         />
       </div>

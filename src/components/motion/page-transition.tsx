@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, m } from "motion/react";
+import { AnimatePresence, m, PresenceContext } from "motion/react";
 import { useSelectedLayoutSegments } from "next/navigation";
 import { LayoutRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useContext, useRef, type ReactNode } from "react";
@@ -29,7 +29,11 @@ export function PageTransition({ children }: { children: ReactNode }) {
   return (
     <AnimatePresence mode="wait" initial={false}>
       <m.div key={key} {...props} className="min-w-0">
-        <FrozenRouter>{children}</FrozenRouter>
+        {/* Isole le contenu : sans cela, `initial={false}` annulerait les animations
+            d'entrée (cascade, barres, compteurs) de tous les composants de la page. */}
+        <PresenceContext.Provider value={null}>
+          <FrozenRouter>{children}</FrozenRouter>
+        </PresenceContext.Provider>
       </m.div>
     </AnimatePresence>
   );
