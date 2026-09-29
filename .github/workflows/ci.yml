@@ -13,8 +13,19 @@ jobs:
   quality:
     name: Lint, types, tests, build
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pronofoot_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pronofoot_test
+      DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5432/pronofoot_test
       AUTH_SECRET: ci-secret-not-for-production
       APP_URL: http://localhost:3000
     steps:
@@ -25,7 +36,9 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm prisma generate
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test:unit
+      - run: pnpm test:integration
       - run: pnpm build

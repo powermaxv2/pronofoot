@@ -1,0 +1,117 @@
+{
+  "errors": [],
+  "response": [
+    {
+      "fixture": {
+        "id": 1380001,
+        "referee": "Clément Turpin",
+        "date": "2026-10-03T19:00:00+00:00",
+        "venue": { "name": "Parc des Princes" },
+        "status": { "short": "2H", "elapsed": 63, "extra": null }
+      },
+      "league": { "id": 61, "season": 2026, "round": "Regular Season - 7" },
+      "teams": {
+        "home": {
+          "id": 85,
+          "name": "Paris Saint Germain",
+          "logo": "https://media.api-sports.io/football/teams/85.png"
+        },
+        "away": { "id": 81, "name": "Marseille", "logo": "https://media.api-sports.io/football/teams/81.png" }
+      },
+      "goals": { "home": 2, "away": 1 },
+      "score": {
+        "halftime": { "home": 1, "away": 1 },
+        "fulltime": { "home": null, "away": null },
+        "extratime": { "home": null, "away": null },
+        "penalty": { "home": null, "away": null }
+      },
+      "events": [
+        {
+          "time": { "elapsed": 12, "extra": null },
+          "team": { "id": 85 },
+          "player": { "name": "O. Dembélé" },
+          "assist": { "name": "V. Vitinha" },
+          "type": "Goal",
+          "detail": "Normal Goal"
+        },
+        {
+          "time": { "elapsed": 30, "extra": null },
+          "team": { "id": 81 },
+          "player": { "name": "M. Greenwood" },
+          "assist": { "name": null },
+          "type": "Goal",
+          "detail": "Penalty"
+        },
+        {
+          "time": { "elapsed": 41, "extra": null },
+          "team": { "id": 81 },
+          "player": { "name": "L. Balerdi" },
+          "assist": { "name": null },
+          "type": "Card",
+          "detail": "Yellow Card"
+        },
+        {
+          "time": { "elapsed": 55, "extra": null },
+          "team": { "id": 81 },
+          "player": { "name": "L. Balerdi" },
+          "assist": { "name": null },
+          "type": "Goal",
+          "detail": "Own Goal"
+        },
+        {
+          "time": { "elapsed": 60, "extra": null },
+          "team": { "id": 85 },
+          "player": { "name": "B. Barcola" },
+          "assist": { "name": null },
+          "type": "Goal",
+          "detail": "Missed Penalty"
+        },
+        {
+          "time": { "elapsed": 61, "extra": null },
+          "team": { "id": 85 },
+          "player": { "name": "X" },
+          "assist": { "name": "Y" },
+          "type": "subst",
+          "detail": "Substitution 1"
+        }
+      ]
+    },
+    {
+      "fixture": {
+        "id": 1390002,
+        "referee": null,
+        "date": "2027-03-11T20:00:00+00:00",
+        "venue": { "name": null },
+        "status": { "short": "PEN", "elapsed": 120, "extra": null }
+      },
+      "league": { "id": 2, "season": 2026, "round": "Round of 16" },
+      "teams": {
+        "home": { "id": 529, "name": "Barcelona", "logo": null },
+        "away": { "id": 157, "name": "Bayern München", "logo": null }
+      },
+      "goals": { "home": 2, "away": 2 },
+      "score": {
+        "halftime": { "home": 0, "away": 1 },
+        "fulltime": { "home": 1, "away": 1 },
+        "extratime": { "home": 1, "away": 1 },
+        "penalty": { "home": 4, "away": 3 }
+      }
+    },
+    {
+      "fixture": {
+        "id": 1390003,
+        "referee": null,
+        "date": "2026-10-04T13:00:00+00:00",
+        "venue": { "name": null },
+        "status": { "short": "NS", "elapsed": null, "extra": null }
+      },
+      "league": { "id": 999, "season": 2026, "round": "Regular Season - 1" },
+      "teams": {
+        "home": { "id": 1, "name": "A", "logo": null },
+        "away": { "id": 2, "name": "B", "logo": null }
+      },
+      "goals": { "home": null, "away": null },
+      "score": { "halftime": { "home": null, "away": null }, "fulltime": { "home": null, "away": null } }
+    }
+  ]
+}
