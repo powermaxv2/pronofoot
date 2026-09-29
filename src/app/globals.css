@@ -1,0 +1,224 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* --------------------------------------------------------------------------
+   Polices auto-hébergées (OFL) — voir src/app/fonts/OFL.txt
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   Tokens — sombre par défaut (classe .dark posée par next-themes)
+   -------------------------------------------------------------------------- */
+:root {
+  --background: #f3f7f1;
+  --background-2: #e4ede2;
+  --foreground: #0b1a12;
+  --muted: #e2eadf;
+  --muted-foreground: #4c6356;
+  --surface: rgb(255 255 255 / 0.72);
+  --surface-strong: rgb(255 255 255 / 0.95);
+  --border: rgb(12 45 24 / 0.12);
+  --input: rgb(12 45 24 / 0.16);
+  --ring: #16a34a;
+  --primary: #16a34a;
+  --primary-foreground: #f4fff7;
+  --grass-ink: #15803d;
+  --volt: #d7f01c;
+  --volt-ink: #5e6b00;
+  --volt-foreground: #0a1405;
+  --destructive: #d92d3f;
+  --destructive-foreground: #ffffff;
+  --gold: #b7860b;
+  --live: #e11d48;
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: #ffffff;
+  --popover-foreground: var(--foreground);
+  --secondary: #e4ede2;
+  --secondary-foreground: var(--foreground);
+  --accent: #dcebd8;
+  --accent-foreground: var(--foreground);
+  --shadow-color: 12 45 24;
+  --glass-blur: 12px;
+  --radius: 1rem;
+  --pitch-line: rgb(12 45 24 / 0.06);
+}
+
+.dark {
+  --background: #07110b;
+  --background-2: #0c1d13;
+  --foreground: #e8f2eb;
+  --muted: #10231a;
+  --muted-foreground: #8da497;
+  --surface: rgb(255 255 255 / 0.045);
+  --surface-strong: rgb(255 255 255 / 0.08);
+  --border: rgb(255 255 255 / 0.09);
+  --input: rgb(255 255 255 / 0.12);
+  --ring: #22c55e;
+  --primary: #22c55e;
+  --primary-foreground: #03140a;
+  --grass-ink: #4ade80;
+  --volt: #e8ff3a;
+  --volt-ink: #e8ff3a;
+  --volt-foreground: #0a1405;
+  --destructive: #ff4d5e;
+  --destructive-foreground: #ffffff;
+  --gold: #f5c542;
+  --live: #ff4d5e;
+  --popover: #0e1f15;
+  --popover-foreground: var(--foreground);
+  --secondary: rgb(255 255 255 / 0.06);
+  --secondary-foreground: var(--foreground);
+  --accent: rgb(255 255 255 / 0.08);
+  --accent-foreground: var(--foreground);
+  --shadow-color: 0 0 0;
+  --pitch-line: rgb(255 255 255 / 0.035);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-2: var(--background-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-grass-ink: var(--grass-ink);
+  --color-volt: var(--volt);
+  --color-volt-ink: var(--volt-ink);
+  --color-volt-foreground: var(--volt-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-gold: var(--gold);
+  --color-live: var(--live);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --font-sans: var(--font-barlow), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-bebas), "Oswald", "Arial Narrow", Impact, sans-serif;
+  --font-condensed: var(--font-barlow-condensed), "Arial Narrow", system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-shimmer: shimmer 1.3s linear infinite;
+  --animate-live-ping: live-ping 1.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes live-ping {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/60;
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-image:
+      radial-gradient(1200px 600px at 85% -10%, var(--background-2), transparent 70%),
+      radial-gradient(800px 500px at -10% 110%, var(--background-2), transparent 70%);
+    background-attachment: fixed;
+    min-height: 100dvh;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  :focus-visible {
+    @apply outline-ring outline-2 outline-offset-2;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  /* Verre léger des cartes. */
+  .glass {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+  }
+  .glass-strong {
+    background: var(--surface-strong);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .label-caps {
+    @apply font-condensed text-xs font-semibold tracking-[0.14em] uppercase;
+  }
+  .pitch-lines {
+    background-image:
+      linear-gradient(var(--pitch-line), var(--pitch-line)),
+      radial-gradient(circle at 50% 50%, transparent 119px, var(--pitch-line) 120px, transparent 122px);
+    background-size:
+      1px 100%,
+      100% 100%;
+    background-position:
+      50% 0,
+      0 0;
+    background-repeat: no-repeat;
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Mouvement réduit : on coupe les boucles décoratives CSS. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-shimmer,
+  .animate-live-ping {
+    animation: none !important;
+  }
+}
