@@ -357,7 +357,7 @@ export const stagger = { fast: 0.035, base: 0.06, slow: 0.1 } as const;
 
 - **Couleurs (sombre par défaut)** : fond `#07110B` → `#0B1A12` (dégradé profond), surfaces en verre `rgba(255,255,255,0.04)` + `backdrop-blur(12px)` + bordure 1 px `rgba(255,255,255,0.08)` ; accent **vert pelouse** `#22C55E` / `#16A34A` ; accent **jaune électrique** `#E8FF3A` (live, joker, points) ; erreur `#FF4D5E`.
 - **Mode clair** : fond `#F4F7F2`, mêmes accents assombris pour le contraste AA.
-- **Typographies** (via `next/font`, auto-hébergées) : **Oswald** ou **Bebas Neue** (condensée, scores et titres), **Inter** (texte). Chiffres tabulaires pour les scores et classements.
+- **Typographies** (via `next/font`, auto-hébergées) : **Bebas Neue** (condensée, scores et titres), **Barlow Condensed** (libellés, chiffres de stats), **Barlow** (texte). Chiffres tabulaires pour les scores et classements.
 - Texture : lignes de terrain en SVG très discrètes en fond, grain léger.
 - Mobile-first : barre de navigation inférieure (Matchs, Pronos, Classements, Ligues, Profil), header compact ; desktop : barre latérale.
 - 100 % français (textes, dates « sam. 3 oct. · 21:00 », nombres `fr-FR`), messages d'erreur Zod traduits.
