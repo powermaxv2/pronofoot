@@ -133,20 +133,26 @@ export const variants = {
 
 export type VariantName = keyof typeof variants;
 
-/** Versions réduites : tout devient un simple fondu, sans translation ni échelle. */
+/** Transformations neutres, appliquées instantanément (annule toute translation héritée du rendu serveur). */
+export const NEUTRAL_TRANSFORM = { x: 0, y: 0, scale: 1, rotate: 0 } as const;
+const reducedTransition: Transition = { default: { duration: 0 }, opacity: fade };
+
 function reducedFor(name: VariantName): Variants {
   if (name === "listContainer") return { initial: {}, animate: {}, exit: {} };
   if (name === "goalBounce" || name === "shake") {
-    return { initial: { opacity: 1 }, animate: { opacity: [0.4, 1], transition: fade } };
+    return {
+      initial: { opacity: 1, ...NEUTRAL_TRANSFORM },
+      animate: { opacity: [0.4, 1], ...NEUTRAL_TRANSFORM, transition: reducedTransition },
+    };
   }
   return {
-    initial: { opacity: 0 },
-    animate: { opacity: 1, transition: fade },
+    initial: { opacity: 0, ...NEUTRAL_TRANSFORM },
+    animate: { opacity: 1, ...NEUTRAL_TRANSFORM, transition: reducedTransition },
     exit: { opacity: 0, transition: fade },
   };
 }
 
-/** Versions réduites : tout devient un simple fondu, sans translation ni échelle. */
+/** Versions réduites : tout devient un simple fondu ; les transformations restent neutres. */
 export const reducedVariants = Object.fromEntries(
   (Object.keys(variants) as VariantName[]).map((name) => [name, reducedFor(name)]),
 ) as Record<VariantName, Variants>;

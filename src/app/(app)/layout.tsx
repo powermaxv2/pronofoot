@@ -11,6 +11,9 @@ import { PageTransition } from "@/components/motion/page-transition";
 import { prisma } from "@/server/db";
 import { avatarOf, requireUser } from "@/server/session";
 
+/** Pages personnelles : jamais prérendues au build. */
+export const dynamic = "force-dynamic";
+
 export default async function AppLayout({ children, modal }: { children: ReactNode; modal: ReactNode }) {
   const user = await requireUser();
   const unread = await prisma.notification.count({ where: { userId: user.id, readAt: null } });

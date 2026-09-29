@@ -3,7 +3,7 @@
 > Site de pronostics football entre amis. **Points virtuels uniquement** : pas d'argent, pas de cotes, pas de pari.
 > Le motion design est une exigence produit au même titre que les fonctionnalités.
 
-Statut : **en attente de validation**. Les points à trancher sont regroupés en fin de document (§ 12).
+Statut : **validé et réalisé** (choix retenus pour le § 12 : recommandations 1 à 7). Documentation d'exploitation : README.md.
 
 ---
 

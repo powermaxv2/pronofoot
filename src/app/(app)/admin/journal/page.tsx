@@ -4,6 +4,7 @@ import { StatusChip } from "@/components/features/admin/status-chip";
 import { formatKickoff } from "@/lib/dates";
 import { cn } from "@/lib/utils";
 import { prisma } from "@/server/db";
+import { requireAdmin } from "@/server/session";
 import { JOBS } from "@/server/jobs";
 
 export const metadata: Metadata = { title: "Journal · Admin" };
@@ -16,6 +17,7 @@ export default async function AdminLog({
 }: {
   searchParams: Promise<{ job?: string; statut?: string; page?: string }>;
 }) {
+  await requireAdmin();
   const params = await searchParams;
   const job =
     params.job && [...JOBS.map((j) => j.name), "recalcul"].includes(params.job) ? params.job : undefined;

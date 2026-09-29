@@ -1,0 +1,30 @@
+# Services de développement : Postgres + Mailpit (boîte mail locale pour les liens magiques).
+#   docker compose -f docker-compose.dev.yml up -d
+#   Mailpit : http://localhost:8025   SMTP : localhost:1025
+name: pronofoot-dev
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pronofoot
+      POSTGRES_PASSWORD: pronofoot
+      POSTGRES_DB: pronofoot
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata-dev:/var/lib/postgresql/data
+      - ./scripts/init-test-dbs.sql:/docker-entrypoint-initdb.d/init-test-dbs.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pronofoot"]
+      interval: 5s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  pgdata-dev:

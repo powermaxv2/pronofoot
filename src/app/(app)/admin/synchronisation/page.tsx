@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { JobRunner } from "@/components/features/admin/job-runner";
 import { prisma } from "@/server/db";
+import { requireAdmin } from "@/server/session";
 import { JOBS } from "@/server/jobs";
 
 export const metadata: Metadata = { title: "Synchronisation · Admin" };
 
 export default async function AdminSync() {
+  await requireAdmin();
   const jobs = await Promise.all(
     JOBS.map(async (j) => {
       const run = await prisma.cronRun.findFirst({ where: { job: j.name }, orderBy: { startedAt: "desc" } });

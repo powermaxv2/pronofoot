@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { env, features } from "@/lib/env";
 import { formatKickoff } from "@/lib/dates";
 import { prisma } from "@/server/db";
+import { requireAdmin } from "@/server/session";
 import { JOBS } from "@/server/jobs";
 import { remainingCalls, usageToday } from "@/server/football/quota";
 
@@ -40,6 +41,7 @@ function Meter({ label, used, budget, hint }: { label: string; used: number; bud
 }
 
 export default async function AdminOverview() {
+  await requireAdmin();
   const weekAgo = new Date(Date.now() - 7 * 86_400_000);
   const [users, activeUsers, predictions, leagues, live, apiFootballToday, footballDataMinute, lastRuns] =
     await Promise.all([

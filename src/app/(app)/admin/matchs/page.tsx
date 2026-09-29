@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ManualResults } from "@/components/features/admin/manual-result";
 import { cn } from "@/lib/utils";
 import { prisma } from "@/server/db";
+import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Résultats · Admin" };
 
@@ -18,6 +19,7 @@ const team = {
 } as const;
 
 export default async function AdminMatches({ searchParams }: { searchParams: Promise<{ vue?: string }> }) {
+  await requireAdmin();
   const { vue } = await searchParams;
   const now = new Date();
   const view = vue === "manuels" ? "manual" : vue === "recents" ? "recent" : "pending";

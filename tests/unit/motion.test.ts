@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  NEUTRAL_TRANSFORM,
   STAGGER_LIMIT,
   reducedVariants,
   rollerOffset,
@@ -28,14 +29,17 @@ describe("lib/motion", () => {
     }
   });
 
-  it("réduit chaque variant à un simple fondu (aucune translation ni échelle)", () => {
+  it("réduit chaque variant à un simple fondu (transformations neutres et instantanées)", () => {
     for (const [name, v] of Object.entries(reducedVariants)) {
-      for (const state of Object.values(v)) {
-        const keys = keysOf(state).filter((k) => k !== "transition");
-        expect(
-          keys.every((k) => k === "opacity"),
-          `${name} : ${keys.join(",")}`,
-        ).toBe(true);
+      for (const state of Object.values(v) as Record<string, unknown>[]) {
+        for (const [key, value] of Object.entries(state)) {
+          if (key === "transition" || key === "opacity") continue;
+          expect(NEUTRAL_TRANSFORM, `${name}.${key}`).toHaveProperty(key, value);
+        }
+        const hasTransform = keysOf(state).some((k) => k in NEUTRAL_TRANSFORM);
+        const transition = state.transition as { default?: { duration: number } } | undefined;
+        if (hasTransform && transition)
+          expect(transition.default?.duration, `${name} : transformation instantanée`).toBe(0);
       }
     }
     expect(Object.keys(reducedVariants).sort()).toEqual(Object.keys(variants).sort());
