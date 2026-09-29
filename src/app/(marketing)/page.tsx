@@ -4,8 +4,11 @@ import { Community, LeaderboardPreview, Scoring, Steps } from "@/components/feat
 import { Logo } from "@/components/layout/logo";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { ButtonLink } from "@/components/ui/button";
+import { getCurrentUser } from "@/server/session";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const user = await getCurrentUser();
+  const home = user?.onboardedAt ? "/accueil" : user ? "/bienvenue" : null;
   return (
     <>
       <header className="safe-top bg-background/70 sticky top-0 z-40 backdrop-blur-md">
@@ -13,14 +16,14 @@ export default function LandingPage() {
           <Logo />
           <nav className="flex items-center gap-1" aria-label="Compte">
             <ThemeToggle />
-            <ButtonLink href="/connexion" variant="glass" size="sm">
-              Se connecter
+            <ButtonLink href={home ?? "/connexion"} variant="glass" size="sm">
+              {home ? "Mon tableau de bord" : "Se connecter"}
             </ButtonLink>
           </nav>
         </div>
       </header>
       <main id="contenu">
-        <Hero />
+        <Hero ctaHref={home ?? "/connexion"} ctaLabel={home ? "Mon tableau de bord" : "Créer mon compte"} />
         <Steps />
         <Scoring />
         <Community />
@@ -35,8 +38,8 @@ export default function LandingPage() {
                 Gratuit, sans pari et sans publicité. Connexion par lien magique ou compte Google.
               </p>
             </div>
-            <ButtonLink href="/connexion" variant="volt" size="lg">
-              Je me lance <ArrowRight />
+            <ButtonLink href={home ?? "/connexion"} variant="volt" size="lg">
+              {home ? "C'est parti" : "Je me lance"} <ArrowRight />
             </ButtonLink>
           </div>
         </section>

@@ -41,7 +41,7 @@ function PitchLines() {
   );
 }
 
-export function Hero() {
+export function Hero({ ctaHref, ctaLabel }: { ctaHref: string; ctaLabel: string }) {
   const root = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
 
@@ -117,8 +117,8 @@ export function Hero() {
             transition={{ ...spring.gentle, delay: 0.6 }}
             className="flex flex-wrap gap-3"
           >
-            <ButtonLink href="/connexion" size="lg" variant="volt">
-              Créer mon compte <ArrowRight />
+            <ButtonLink href={ctaHref} size="lg" variant="volt">
+              {ctaLabel} <ArrowRight />
             </ButtonLink>
             <ButtonLink href="#bareme" size="lg" variant="glass">
               Voir le barème

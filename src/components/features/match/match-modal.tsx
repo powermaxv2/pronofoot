@@ -3,7 +3,7 @@
 import { AnimatePresence, m } from "motion/react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { useMotionPreset } from "@/hooks/use-motion-preset";
 import { duration, spring } from "@/lib/motion";
@@ -24,20 +24,23 @@ export function MatchModal({
   children: ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(true);
+  // Le slot parallèle reste monté après une navigation ailleurs : la modale se retire d'elle-même.
+  const active = pathname === `/matchs/${matchId}`;
   const backdrop = useMotionPreset("fadeIn");
 
   // Après l'animation de sortie, retour à la page d'origine (la carte reprend sa place).
   useEffect(() => {
-    if (open) return;
+    if (open || !active) return;
     const timer = window.setTimeout(() => router.back(), duration.fast * 1000 + 40);
     return () => window.clearTimeout(timer);
-  }, [open, router]);
+  }, [open, active, router]);
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={(next) => !next && setOpen(false)}>
       <AnimatePresence>
-        {open && (
+        {open && active && (
           <DialogPrimitive.Portal forceMount>
             <DialogPrimitive.Overlay asChild forceMount>
               <m.div {...backdrop.props} className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" />

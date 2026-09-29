@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { LiveScoresProvider } from "@/components/features/match/live-scores";
 import { BottomNav } from "@/components/layout/bottom-nav";
+import { InstallPrompt } from "@/components/layout/install-prompt";
 import { Logo } from "@/components/layout/logo";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { SideNav } from "@/components/layout/side-nav";
@@ -36,6 +37,7 @@ export default async function AppLayout({ children, modal }: { children: ReactNo
           </main>
         </div>
         <BottomNav />
+        <InstallPrompt />
         {modal}
       </div>
     </LiveScoresProvider>
