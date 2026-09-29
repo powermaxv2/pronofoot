@@ -11,8 +11,8 @@ export type LeaderboardPeriod =
 export type LeaderboardQuery = {
   period: LeaderboardPeriod;
   leagueId?: string;
-  /** Ne compter que les pronostics notés avant cette date (calcul de la variation). */
-  scoredBefore?: Date;
+  /** Ne compter que les matchs commencés avant cette date (calcul de la variation). */
+  kickoffBefore?: Date;
 };
 
 export type LeaderboardRow = {
@@ -26,7 +26,7 @@ export type LeaderboardRow = {
   user: { username: string; name: string | null; avatarUrl: string | null; image: string | null };
 };
 
-async function aggregate({ period, leagueId, scoredBefore }: LeaderboardQuery): Promise<LeaderboardInput[]> {
+async function aggregate({ period, leagueId, kickoffBefore }: LeaderboardQuery): Promise<LeaderboardInput[]> {
   const conditions: Prisma.Sql[] = [];
   if (period.type === "month")
     conditions.push(Prisma.sql`m."kickoffAt" >= ${period.start} AND m."kickoffAt" < ${period.end}`);
@@ -35,7 +35,7 @@ async function aggregate({ period, leagueId, scoredBefore }: LeaderboardQuery): 
       Prisma.sql`m."competitionId" = ${period.competitionId} AND m."seasonId" = ${period.seasonId} AND m."round" = ${period.round}`,
     );
   }
-  if (scoredBefore) conditions.push(Prisma.sql`p."scoredAt" < ${scoredBefore}`);
+  if (kickoffBefore) conditions.push(Prisma.sql`m."kickoffAt" < ${kickoffBefore}`);
   const extra = conditions.length ? Prisma.sql`AND ${Prisma.join(conditions, " AND ")}` : Prisma.empty;
   const leagueFilter = leagueId
     ? Prisma.sql`AND u.id IN (SELECT lm."userId" FROM "LeagueMember" lm WHERE lm."leagueId" = ${leagueId})`
@@ -64,7 +64,7 @@ async function aggregate({ period, leagueId, scoredBefore }: LeaderboardQuery): 
   return rows;
 }
 
-/** Classement avec variation de rang depuis le début de la journée (Paris). */
+/** Classement avec variation de rang par rapport à la veille (matchs commencés avant aujourd'hui, Paris). */
 export async function getLeaderboard(
   query: LeaderboardQuery,
   now: Date = new Date(),
@@ -72,10 +72,9 @@ export async function getLeaderboard(
   const current = rankLeaderboard(await aggregate(query));
   let previous = new Map<string, number>();
   if (query.period.type !== "round") {
-    const before = rankLeaderboard(await aggregate({ ...query, scoredBefore: parisDayRange(now).start }));
-    previous = new Map(
-      before.filter((e) => e.predictions > 0 || query.leagueId).map((e) => [e.userId, e.rank]),
-    );
+    // Classement tel qu'il était avant les matchs du jour (heure de Paris).
+    const before = rankLeaderboard(await aggregate({ ...query, kickoffBefore: parisDayRange(now).start }));
+    previous = new Map(before.filter((e) => e.predictions > 0).map((e) => [e.userId, e.rank]));
   }
   const users = await prisma.user.findMany({
     where: { id: { in: current.map((c) => c.userId) } },

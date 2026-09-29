@@ -37,6 +37,14 @@ describe("classements", () => {
       [c.username, 0, 3],
     ]);
 
+    // Variation : par rapport au classement d'avant les matchs du jour (3 octobre, Paris).
+    const sameDay = await getLeaderboard({ period: { type: "season" } }, new Date("2026-10-03T21:30:00Z"));
+    expect(sameDay.map((r) => [r.user.username, r.delta])).toEqual([
+      [b.username, 1],
+      [a.username, -1],
+      [c.username, null],
+    ]);
+
     const september = await getLeaderboard({
       period: {
         type: "month",

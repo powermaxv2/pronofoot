@@ -43,6 +43,9 @@
   --glass-blur: 12px;
   --radius: 1rem;
   --pitch-line: rgb(12 45 24 / 0.06);
+  /* Série de graphique (validée : bande de luminance, contraste ≥ 3:1). */
+  --chart-1: #16a34a;
+  --chart-grid: rgb(12 45 24 / 0.1);
 }
 
 .dark {
@@ -74,6 +77,8 @@
   --accent-foreground: var(--foreground);
   --shadow-color: 0 0 0;
   --pitch-line: rgb(255 255 255 / 0.035);
+  --chart-1: #169c47;
+  --chart-grid: rgb(255 255 255 / 0.08);
   color-scheme: dark;
 }
 

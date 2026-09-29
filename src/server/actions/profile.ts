@@ -141,3 +141,14 @@ export async function deleteAccount(confirmation: string): Promise<ActionResult>
   if (result.ok) await signOut({ redirectTo: "/" });
   return result;
 }
+
+/** Marque les badges comme vus (l'animation de déblocage ne se joue qu'une fois). */
+export async function markBadgesSeen(): Promise<ActionResult> {
+  return safeAction(async () => {
+    const user = await requireUser();
+    await prisma.userBadge.updateMany({
+      where: { userId: user.id, seenAt: null },
+      data: { seenAt: new Date() },
+    });
+  });
+}
