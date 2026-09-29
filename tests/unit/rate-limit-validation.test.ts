@@ -42,15 +42,27 @@ describe("validation des saisies", () => {
     expect(profileSchema.safeParse({ ...base, avatarUrl: "/avatars/maillot-03.svg" }).success).toBe(true);
     expect(profileSchema.safeParse({ ...base, avatarUrl: "/api/avatars/abc-123.webp" }).success).toBe(true);
     expect(profileSchema.safeParse({ ...base, avatarUrl: "https://evil.example/x.png" }).success).toBe(false);
-    expect(profileSchema.safeParse({ ...base, avatarUrl: "/api/avatars/../../etc.webp" }).success).toBe(false);
+    expect(profileSchema.safeParse({ ...base, avatarUrl: "/api/avatars/../../etc.webp" }).success).toBe(
+      false,
+    );
   });
 
   it("exige un score complet et cohérent avec le 1N2", () => {
     const base = { matchId: "m1", isJoker: false };
-    expect(predictionSchema.safeParse({ ...base, outcome: "HOME", homeScore: 2, awayScore: 1 }).success).toBe(true);
-    expect(predictionSchema.safeParse({ ...base, outcome: "DRAW", homeScore: null, awayScore: null }).success).toBe(true);
-    expect(predictionSchema.safeParse({ ...base, outcome: "AWAY", homeScore: 2, awayScore: 1 }).success).toBe(false);
-    expect(predictionSchema.safeParse({ ...base, outcome: "HOME", homeScore: 2, awayScore: null }).success).toBe(false);
-    expect(predictionSchema.safeParse({ ...base, outcome: "HOME", homeScore: 12, awayScore: 1 }).success).toBe(false);
+    expect(predictionSchema.safeParse({ ...base, outcome: "HOME", homeScore: 2, awayScore: 1 }).success).toBe(
+      true,
+    );
+    expect(
+      predictionSchema.safeParse({ ...base, outcome: "DRAW", homeScore: null, awayScore: null }).success,
+    ).toBe(true);
+    expect(predictionSchema.safeParse({ ...base, outcome: "AWAY", homeScore: 2, awayScore: 1 }).success).toBe(
+      false,
+    );
+    expect(
+      predictionSchema.safeParse({ ...base, outcome: "HOME", homeScore: 2, awayScore: null }).success,
+    ).toBe(false);
+    expect(
+      predictionSchema.safeParse({ ...base, outcome: "HOME", homeScore: 12, awayScore: 1 }).success,
+    ).toBe(false);
   });
 });

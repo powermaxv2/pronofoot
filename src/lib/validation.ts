@@ -30,7 +30,8 @@ export const usernameSchema = z
   .regex(/^[a-z0-9_-]+$/, "Lettres minuscules, chiffres, « _ » et « - » uniquement.")
   .refine((v) => !RESERVED.has(v), "Ce pseudo est réservé.");
 
-export const emailSchema = z.email("Adresse e-mail invalide.").trim().toLowerCase().max(254);
+// Nettoyage avant validation : une adresse collée avec des espaces reste acceptée.
+export const emailSchema = z.string().trim().toLowerCase().max(254).pipe(z.email("Adresse e-mail invalide."));
 
 /** Avatar : galerie interne ou fichier envoyé (chemins servis par l'application). */
 export const avatarUrlSchema = z
