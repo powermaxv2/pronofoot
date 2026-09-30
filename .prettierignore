@@ -1,0 +1,11 @@
+.next
+node_modules
+dist
+pnpm-lock.yaml
+public/lottie
+public/sw.js
+prisma/migrations
+playwright-report
+test-results
+PLAN.md
+src/app/fonts

@@ -1,0 +1,487 @@
+// Modèle de données PronoFoot.
+// Toutes les dates sont stockées en UTC ; l'affichage se fait en Europe/Paris.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/**
+ * --------------------------------------------------------------------------
+ */
+/**
+ * Enums
+ */
+/**
+ * --------------------------------------------------------------------------
+ */
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum MatchStatus {
+  SCHEDULED
+  LIVE
+  HALFTIME
+  FINISHED
+  POSTPONED
+  CANCELLED
+}
+
+/// 1 / N / 2
+enum Outcome {
+  HOME
+  DRAW
+  AWAY
+}
+
+enum PredictionState {
+  PENDING
+  WON
+  EXACT
+  LOST
+  VOID
+}
+
+enum LeagueRole {
+  OWNER
+  MEMBER
+}
+
+enum BadgeTier {
+  BRONZE
+  SILVER
+  GOLD
+}
+
+enum NotificationType {
+  REMINDER
+  RESULT
+  BADGE
+  LEAGUE
+  SYSTEM
+}
+
+enum CronStatus {
+  RUNNING
+  SUCCESS
+  ERROR
+  SKIPPED
+}
+
+enum CronTrigger {
+  SCHEDULE
+  MANUAL
+}
+
+/**
+ * --------------------------------------------------------------------------
+ */
+/**
+ * Utilisateurs & Auth
+ */
+/**
+ * --------------------------------------------------------------------------
+ */
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  emailVerified  DateTime?
+  name           String?
+  /// Image fournie par Google (Auth.js).
+  image          String?
+  role           Role      @default(USER)
+  /// Pseudo public : 3–20 caractères [a-z0-9_-].
+  username       String?   @unique
+  /// Avatar choisi : upload (/api/avatars/…) ou galerie (/avatars/…).
+  avatarUrl      String?
+  favoriteTeamId String?
+  favoriteTeam   Team?     @relation("FavoriteTeam", fields: [favoriteTeamId], references: [id], onDelete: SetNull)
+  onboardedAt    DateTime?
+  disabledAt     DateTime?
+
+  // Préférences de notification
+  notifyReminders Boolean @default(true)
+  notifyResults   Boolean @default(true)
+  notifyEmail     Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts          Account[]
+  sessions          Session[]
+  predictions       Prediction[]
+  leagueMemberships LeagueMember[]
+  ownedLeagues      League[]           @relation("LeagueOwner")
+  badges            UserBadge[]
+  notifications     Notification[]
+  pushSubscriptions PushSubscription[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+/**
+ * --------------------------------------------------------------------------
+ */
+/**
+ * Football
+ */
+/**
+ * --------------------------------------------------------------------------
+ */
+
+model Competition {
+  id               String  @id @default(cuid())
+  /// FL1 | PL | PD | SA | BL1 | CL
+  code             String  @unique
+  name             String
+  shortName        String
+  country          String
+  emblemUrl        String?
+  /// Couleur d'accent de l'interface.
+  color            String
+  apiFootballId    Int?    @unique
+  footballDataCode String? @unique
+  sortOrder        Int     @default(0)
+  currentSeasonId  String? @unique
+  currentSeason    Season? @relation("CurrentSeason", fields: [currentSeasonId], references: [id], onDelete: SetNull)
+
+  seasons Season[]
+  matches Match[]
+}
+
+model Season {
+  id            String      @id @default(cuid())
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  /// Année de début : 2026 = saison 2026-27.
+  year          Int
+  startDate     DateTime
+  endDate       DateTime
+  currentRound  Int?
+
+  matches    Match[]
+  standings  Standing[]
+  currentFor Competition? @relation("CurrentSeason")
+
+  @@unique([competitionId, year])
+}
+
+model Team {
+  id             String  @id @default(cuid())
+  name           String
+  shortName      String
+  /// Abréviation à trois lettres.
+  tla            String
+  crestUrl       String?
+  primaryColor   String
+  secondaryColor String
+  country        String?
+  apiFootballId  Int?    @unique
+  footballDataId Int?    @unique
+  /// Clé de rapprochement entre fournisseurs (nom normalisé).
+  slug           String  @unique
+
+  homeMatches Match[]    @relation("HomeTeam")
+  awayMatches Match[]    @relation("AwayTeam")
+  standings   Standing[]
+  fans        User[]     @relation("FavoriteTeam")
+}
+
+model Match {
+  id            String      @id @default(cuid())
+  seasonId      String
+  season        Season      @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  /// Numéro de journée (phase de ligue C1 : 1–8 ; phases finales : 9+).
+  round         Int
+  roundLabel    String
+  kickoffAt     DateTime
+  status        MatchStatus @default(SCHEDULED)
+  minute        Int?
+
+  homeTeamId String
+  homeTeam   Team   @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeamId String
+  awayTeam   Team   @relation("AwayTeam", fields: [awayTeamId], references: [id])
+
+  /// Score au temps réglementaire (base du barème).
+  homeScore  Int?
+  awayScore  Int?
+  htHome     Int?
+  htAway     Int?
+  venue      String?
+  referee    String?
+  /// Compositions (validées par Zod à l'écriture).
+  lineups    Json?
+  /// Buts et cartons (validés par Zod à l'écriture).
+  events     Json?
+  /// Derniers face-à-face fournis par l'API (validés par Zod à l'écriture).
+  headToHead Json?
+
+  apiFootballId  Int? @unique
+  footballDataId Int? @unique
+
+  /// Date de distribution des points (idempotence du calcul).
+  scoredAt     DateTime?
+  lastSyncedAt DateTime?
+  /// Score saisi à la main par un admin (non écrasé par les synchros).
+  manualScore  Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  predictions Prediction[]
+
+  @@index([kickoffAt])
+  @@index([status, kickoffAt])
+  @@index([competitionId, seasonId, round])
+  @@index([homeTeamId, kickoffAt])
+  @@index([awayTeamId, kickoffAt])
+}
+
+model Standing {
+  id           String   @id @default(cuid())
+  seasonId     String
+  season       Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  teamId       String
+  team         Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  position     Int
+  played       Int
+  won          Int
+  drawn        Int
+  lost         Int
+  goalsFor     Int
+  goalsAgainst Int
+  points       Int
+  /// 5 derniers résultats, du plus ancien au plus récent : "WWDLW".
+  form         String?
+  updatedAt    DateTime @updatedAt
+
+  @@unique([seasonId, teamId])
+  @@index([seasonId, position])
+}
+
+/**
+ * --------------------------------------------------------------------------
+ */
+/**
+ * Pronostics
+ */
+/**
+ * --------------------------------------------------------------------------
+ */
+
+model Prediction {
+  id         String          @id @default(cuid())
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  matchId    String
+  match      Match           @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  outcome    Outcome
+  /// Score exact (optionnel, cohérent avec `outcome`).
+  homeScore  Int?
+  awayScore  Int?
+  isJoker    Boolean         @default(false)
+  /// "userId:competitionId:seasonId:round" si joker, sinon NULL.
+  /// L'unicité garantit un seul joker par journée, même en concurrence.
+  jokerKey   String?         @unique
+  state      PredictionState @default(PENDING)
+  points     Int             @default(0)
+  /// Détail du calcul : { result, exact, multiplier }.
+  breakdown  Json?
+  /// Part de la communauté ayant choisi la même issue (0–1), figée au calcul.
+  crowdShare Float?
+  scoredAt   DateTime?
+  /// Le résultat a été vu par l'utilisateur (déclenche les confettis une seule fois).
+  seenAt     DateTime?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@unique([userId, matchId])
+  @@index([matchId])
+  @@index([userId, scoredAt])
+  @@index([scoredAt])
+}
+
+/**
+ * --------------------------------------------------------------------------
+ */
+/**
+ * Social
+ */
+/**
+ * --------------------------------------------------------------------------
+ */
+
+model League {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  /// Code d'invitation (8 caractères sans ambiguïté).
+  inviteCode  String   @unique
+  description String?
+  emoji       String   @default("⚽")
+  color       String   @default("#22c55e")
+  ownerId     String
+  owner       User     @relation("LeagueOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  members LeagueMember[]
+}
+
+model LeagueMember {
+  leagueId String
+  league   League     @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     LeagueRole @default(MEMBER)
+  joinedAt DateTime   @default(now())
+
+  @@id([leagueId, userId])
+  @@index([userId])
+}
+
+model Badge {
+  code        String    @id
+  name        String
+  description String
+  icon        String
+  tier        BadgeTier
+  sortOrder   Int       @default(0)
+
+  users UserBadge[]
+}
+
+model UserBadge {
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeCode String
+  badge     Badge     @relation(fields: [badgeCode], references: [code], onDelete: Cascade)
+  earnedAt  DateTime  @default(now())
+  /// Match ou contexte ayant déclenché le badge.
+  context   String?
+  seenAt    DateTime?
+
+  @@id([userId, badgeCode])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+  /// Empêche les doublons (ex. "reminder:{userId}:{matchId}").
+  dedupeKey String?          @unique
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+/**
+ * --------------------------------------------------------------------------
+ */
+/**
+ * Exploitation (cron, API foot)
+ */
+/**
+ * --------------------------------------------------------------------------
+ */
+
+model CronRun {
+  id         String      @id @default(cuid())
+  job        String
+  status     CronStatus
+  trigger    CronTrigger @default(SCHEDULE)
+  startedAt  DateTime    @default(now())
+  finishedAt DateTime?
+  durationMs Int?
+  message    String?
+  stats      Json?
+
+  @@index([job, startedAt])
+  @@index([startedAt])
+}
+
+model ApiCache {
+  key       String   @id
+  provider  String
+  payload   Json
+  fetchedAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
+model ApiUsage {
+  provider String
+  /// Jour (UTC) pour API-Football, minute tronquée pour football-data.
+  window   DateTime
+  count    Int      @default(0)
+
+  @@id([provider, window])
+}
