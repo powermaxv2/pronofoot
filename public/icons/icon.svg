@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<rect width="512" height="512" rx="112.64" fill="#07110b"/>
+<defs><radialGradient id="g" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#f6ffb0"/><stop offset="0.55" stop-color="#e8ff3a"/><stop offset="1" stop-color="#9fbf12"/></radialGradient></defs>
+<circle cx="256" cy="256" r="184" fill="url(#g)"/>
+<polygon points="256.00,200.80 308.50,238.94 288.45,300.66 223.55,300.66 203.50,238.94" fill="#07110b"/>
+<line x1="256.00" y1="200.80" x2="256.00" y2="141.92" stroke="#07110b" stroke-width="11.04" stroke-linecap="round"/><line x1="308.50" y1="238.94" x2="364.50" y2="220.75" stroke="#07110b" stroke-width="11.04" stroke-linecap="round"/><line x1="288.45" y1="300.66" x2="323.05" y2="348.29" stroke="#07110b" stroke-width="11.04" stroke-linecap="round"/><line x1="223.55" y1="300.66" x2="188.95" y2="348.29" stroke="#07110b" stroke-width="11.04" stroke-linecap="round"/><line x1="203.50" y1="238.94" x2="147.50" y2="220.75" stroke="#07110b" stroke-width="11.04" stroke-linecap="round"/><polygon points="256.00,149.28 221.00,123.85 234.37,82.71 277.63,82.71 291.00,123.85" fill="#07110b"/><polygon points="357.50,223.02 370.87,181.88 414.13,181.88 427.49,223.02 392.50,248.45" fill="#07110b"/><polygon points="318.73,342.34 361.99,342.34 375.36,383.48 340.36,408.91 305.36,383.48" fill="#07110b"/><polygon points="193.27,342.34 206.64,383.48 171.64,408.91 136.64,383.48 150.01,342.34" fill="#07110b"/><polygon points="154.50,223.02 119.50,248.45 84.51,223.02 97.87,181.88 141.13,181.88" fill="#07110b"/>
+<circle cx="256" cy="256" r="178.48" fill="none" stroke="#07110b" stroke-opacity="0.35" stroke-width="11.04"/>
+</svg>
